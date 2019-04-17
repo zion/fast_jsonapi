@@ -13,12 +13,26 @@ describe FastJsonapi::ObjectSerializer do
     attr_accessor :id, :model, :year
   end
 
+  class OtherItemSerializer
+    include FastJsonapi::ObjectSerializer
+    set_type :other_item
+    set_key_transform :dash
+    attributes :id
+  end
+
   class ListSerializer
     include FastJsonapi::ObjectSerializer
     set_type :list
     attributes :name
     set_key_transform :dash
     has_many :items, polymorphic: true
+  end
+
+  class CustomListSerializer
+    include FastJsonapi::ObjectSerializer
+    set_type :my_custom_list
+    attributes :name
+    has_many :items, serializer: OtherItemSerializer, polymorphic:true
   end
 
   let(:car) do
@@ -46,6 +60,15 @@ describe FastJsonapi::ObjectSerializer do
       expect(record_type).to eq 'checklist-item'.to_sym
       record_type = list_hash[:data][:relationships][:items][:data][1][:type]
       expect(record_type).to eq 'car'.to_sym
+    end
+
+    it 'should use the provided serializer' do
+      list = List.new 
+      list.id = 1
+      list.items = [checklist_item, checklist_item, checklist_item, checklist_item]
+      list_hash = CustomListSerializer.new(list).to_hash
+      record_type = list_hash[:data][:relationships][:items][:data][0][:type]
+      expect(record_type).to eq 'other-item'.to_sym
     end
   end
 end
