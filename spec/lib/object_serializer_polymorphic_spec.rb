@@ -32,7 +32,7 @@ describe FastJsonapi::ObjectSerializer do
     include FastJsonapi::ObjectSerializer
     set_type :my_custom_list
     attributes :name
-    has_many :items, serializer: OtherItemSerializer, polymorphic:true
+    has_many :items, serializer: OtherItemSerializer, polymorphic: true
   end
 
   let(:car) do

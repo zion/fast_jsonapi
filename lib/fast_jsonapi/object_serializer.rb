@@ -202,7 +202,6 @@ module FastJsonapi
         self.relationships_to_serialize = {} if relationships_to_serialize.nil?
         self.cachable_relationships_to_serialize = {} if cachable_relationships_to_serialize.nil?
         self.uncachable_relationships_to_serialize = {} if uncachable_relationships_to_serialize.nil?
-
         if !relationship.cached
           self.uncachable_relationships_to_serialize[relationship.name] = relationship
         else
@@ -231,7 +230,7 @@ module FastJsonapi
       end
 
       def create_relationship(base_key, relationship_type, options, block)
-        name = base_key.to_sym
+        name = options[:name] || base_key.to_sym
         if relationship_type == :has_many
           base_serialization_key = base_key.to_s.singularize
           base_key_sym = base_serialization_key.to_sym
